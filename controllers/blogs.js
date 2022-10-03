@@ -14,14 +14,18 @@ blogsRouter.get('/:id', (request, response) => {
 })
 
 
-blogsRouter.post('/', (request, response) => {
-  const blog = new Blog(request.body)
+blogsRouter.post('/',  async (request, response) => {
+  const body = request.body
 
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
+  if(body.likes === undefined)              //if the like property was not defined then
+    body.likes = 0                          //set its value to 0
+
+  if(body.url=== undefined && body.title === undefined)
+    return response.status(400).json({ error : 'Content missing' })
+
+  const blog = new Blog(body)
+  const savedBlog = await blog.save()
+  response.status(201).json(savedBlog)
 })
 
 module.exports = blogsRouter
