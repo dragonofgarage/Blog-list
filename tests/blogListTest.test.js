@@ -43,7 +43,9 @@ describe('blog list test', () => {
     const response = await api.get('/api/blogs')
     expect(response.body).toHaveLength(7)
   })
+})
 
+describe('absence test', () => {
   test('test absence of like attribute', async () => {
     const newBlog = {
       title: 'like test',
@@ -69,6 +71,49 @@ describe('blog list test', () => {
       .post('/api/blogs/')
       .send(newBlog)
       .expect(400)
+  })
+})
+
+describe('single request test', () => {
+  test('delete one resource', async () => {
+    const blogAtStart = await helper.blogsInDb()
+    const blogToDelete = blogAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+
+    const blogAtEnd = await helper.blogsInDb()
+
+    const contents = blogAtEnd.map(blog => blog.title)
+
+    expect(contents).not.toContain(blogToDelete.title)
+  })
+
+  test('get one resource', async () => {
+    const blogAtStart = await helper.blogsInDb()
+    const blogToGet = blogAtStart[0]
+
+    await api
+      .get(`/api/blogs/${blogToGet.id}`)
+      .expect(200)
+  })
+
+  test('Update a resource', async () => {
+    const blogAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogAtStart[0]
+
+    const UpdateBlog = {
+      ...blogToUpdate, likes:9999
+    }
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}` )
+      .send(UpdateBlog)
+
+    const blogAtEnd = await helper.blogsInDb()
+    const blogAfterUp = blogAtEnd[0]
+    expect(blogAfterUp.likes).toBe(9999)
   })
 })
 

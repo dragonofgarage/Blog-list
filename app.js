@@ -22,7 +22,9 @@ app.use(cors())
 app.use(express.json())
 
 app.use(middware.requestLogger)
+app.use(middware.errorHandler)
 
 app.use('/api/blogs', blogsRouter)
+
 
 module.exports = app
