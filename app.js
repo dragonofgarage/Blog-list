@@ -8,6 +8,7 @@ const usersRouter = require('./controllers/users')
 const logger = require('./utils/logger')
 const config = require('./utils/config')
 const middware = require('./utils/middleware')
+const loginRouter = require('./controllers/login')
 
 logger.info('connecting to MongoDB')
 
@@ -26,6 +27,7 @@ app.use(middware.requestLogger)
 
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/login', loginRouter)
 
 app.use(middware.errorHandler)
 
