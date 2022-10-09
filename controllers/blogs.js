@@ -23,12 +23,8 @@ blogsRouter.get('/:id', async (request, response) => {
 
 blogsRouter.post('/',  async (request, response, next) => {
   const body = request.body
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if(!decodedToken.id){
-    return response.status(401).json({ error: 'token missing or invalid' })
-  }
 
-  const user = await User.findById(decodedToken.id)
+  const user = await request.user
 
   const blog = new Blog({
     title: body.title,
@@ -57,14 +53,12 @@ blogsRouter.post('/',  async (request, response, next) => {
 
 blogsRouter.delete('/:id', async (request, response, next) => {
   try{
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if(!decodedToken.id) {
-      return response.status(401).json({ error: 'token missing or invalid' })
-    }
 
     const blog = await Blog.findById(request.params.id)
+    const user = request.user
 
-    if(blog.user.toString() !== decodedToken.id.toString())
+    //if the current user id isn't equl to bolg's owner's id
+    if(blog.user.toString() !== user.id.toString())
     {
       return response.status(401).json({ error: 'blog can only be deleted by its owner' })
     }
