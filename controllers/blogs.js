@@ -34,10 +34,13 @@ blogsRouter.post('/',  async (request, response, next) => {
     user:user._id,
   })
 
-  if(body.likes === undefined)              //if the like property was not defined then
-    body.likes = 0                          //set its value to 0
+  if(blog.likes === undefined)              //if the like property was not defined then
+    blog.likes = 0                          //set its value to 0
 
-  if(body.url=== undefined && body.title === undefined)
+  if(blog.url=== undefined || blog.title === undefined)
+    return response.status(400).json({ error : 'Content missing' })
+
+  if(blog.url=== '' || blog.title === '')
     return response.status(400).json({ error : 'Content missing' })
 
   try{
